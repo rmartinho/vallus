@@ -1,0 +1,7 @@
+# all sorts of garbage
+*~
+*.vim
+*.swp
+.vimrc
+*.pyc
+
