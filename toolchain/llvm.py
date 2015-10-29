@@ -16,45 +16,104 @@ class Toolchain:
         return 'clang++'
     def linker(self):
         return 'clang++'
+    def archiver(self):
+        return 'ar'
+
+    def max_warnings(self):
+        return ['-pedantic', '-Wall', '-Wextra', '-Werror', '-Weverything']
 
     def include(self, d):
         return '-I' + d;
     def dependency_include(self, d):
         return '-isystem' + d
 
-    def define(self, d):
-        return '-D' + d;
+    def compiler_command(self,
+                         command = 'g++',
+                         dep_output = None,
+                         debug = False,
+                         lto = True,
+                         warnings = [],
+                         includes = [],
+                         defines = [],
+                         extraflags = '',
+                         input = '',
+                         output = ''):
+        return ' '.join(itertools.chain(
+                    [command],
+                    ['-MMD','-MF ' + dep_output],
+                    ['-c', '-stdlib=libc++', '-std=c++11', '-pthread'],
+                    self.debug_flags() if debug else self.opt_flags(),
+                    self.lto_flags() if lto and not debug else [],
+                    warnings,
+                    [self.include('include')],
+                    (self.dep_include(i) for i in includes),
+                    (self.define(*kv) for kv in defines),
+                    [extraflags],
+                    ['-o', output],
+                    [input]
+                ))
 
+    def linker_command(self,
+                       command = 'g++',
+                       libraries = [],
+                       debug = False,
+                       lto = True,
+                       extraflags = '',
+                       input = '',
+                       output = ''):
+        return ' '.join(itertools.chain(
+                    [command],
+                    ['-stdlib=libc++', '-std=c++11', '-pthread'],
+                    self.lto_flags() if lto and not debug else [],
+                    [extraflags],
+                    ['-o', output],
+                    [input],
+                    (self.library(l) for l in libraries)
+                ))
+
+
+    def archiver_command(self,
+                         command = 'ar',
+                         extraflags = '',
+                         input = '',
+                         output = ''):
+        return ' '.join(itertools.chain(
+                    [command],
+                    ['rcs'],
+                    [extraflags],
+                    [output],
+                    [input]
+                ))
+
+    def library_command(self,
+                        command = linker,
+                        extraflags = '',
+                        input = '',
+                        output = ''):
+        return 'foo'
+
+    def program_name(self, output):
+        return output
+    def archive_name(self, output):
+        return 'lib' + output + '.a'
+    def library_name(self, output):
+        return 'lib' + output + '.so'
+
+    def include(self, i):
+        return '-I' + i;
+    def dep_include(self, i):
+        return '-isystem' + i
+    def define(self, k, v=None):
+        return '-D' + (k + '=' + v if v else k)
     def library(self, l):
         return '-l' + l;
 
-    def common_cxx_flags(self):
-        return ['-stdlib=libc++', '-std=c++11', '-pthread']
-    def cxx_flags(self):
-        return ['-c'] + self.common_cxx_flags()
-    def link_flags(self):
-        return self.common_cxx_flags() + self.max_warnings()
-
     def debug_flags(self):
         return ['-g', '-Og']
-    def optimisation_flags(self):
+    def opt_flags(self):
         return ['-O3']
-    def compiler_lto_flags(self):
-        return []
-    def linker_lto_flags(self):
+    def lto_flags(self):
         return []
 
-    def max_warnings(self):
-        return ['-pedantic', '-Wall', '-Wextra', '-Werror']
-
-    def compiler_output(self, file):
-        return ['-o ' + file]
-    def linker_output(self, file):
-        return self.compiler_output(file)
-    def executable_extension(self):
-        return ''
-    def dependencies_output(self, file):
-        return ['-MMD', '-MF ' + file]
     def ninja_deps_style(self):
         return 'gcc'
-
