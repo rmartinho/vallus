@@ -175,12 +175,12 @@ class Vallus:
         for target in self._targets:
             target.build(tools, ninja)
 
-        # default target
-        ninja.default(default)
-
         # Custom ninja settings
         if custom:
             custom(tools, ninja)
+
+        # default target
+        ninja.default(default)
 
     class ProgramTarget:
         def __init__(self, target, output, root):
