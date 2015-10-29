@@ -221,26 +221,6 @@ class Vallus:
                         inputs = objects)
             _target_alias(ninja, self.target, binary)
 
-    class SingleHeaderTarget:
-        def __init__(self, target, output, root):
-            self.target = target
-            self.root = root
-            self.output = output
-
-        def build(self, tools, ninja):
-            single_header_tool = 'tools/vallus/single_header.py'
-            ninja.rule('header',
-                    command = ' '.join(['python', single_header_tool, '$in', '$out']),
-                    description = 'HEADER $out')
-
-            header = path.join('dist', self.output)
-            ninja.build(header, 'header',
-                    inputs = self.root,
-                    implicit = single_header_tool)
-
-            ninja.build(self.target, 'phony',
-                    inputs = header)
-
     def program(self, target, output, root='src'):
         self._targets.append(self.ProgramTarget(target, output, root))
     def test_runner(self, target='test', output='test', root='test'):
@@ -249,6 +229,3 @@ class Vallus:
         self._targets.append(self.StaticLibraryTarget(target, output, root))
     def dynamic_library(self, target, output, root='src'):
         self._targets.append(self.DynamicLibraryTarget(target, output, root))
-    def single_header(self, target, output, root):
-        self._targets.append(self.SingleHeaderTarget(target, output, root))
-
