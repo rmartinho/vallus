@@ -161,16 +161,6 @@ class Vallus:
         ninja.build('build.ninja', 'bootstrap',
                 implicit = sys.argv[0])
 
-        # documentation build edge
-        site = path.join('dist', 'doc')
-        site_files = list(get_files('doc', '*'))
-        ninja.build(site, 'site',
-                inputs = 'doc',
-                implicit = site_files)
-
-        ninja.build('docs', 'phony',
-                inputs = site)
-
         # user-defined targets
         for target in self._targets:
             target.build(tools, ninja)
@@ -221,6 +211,22 @@ class Vallus:
                         inputs = objects)
             _target_alias(ninja, self.target, binary)
 
+    class DocumentationTarget:
+        def __init__(self, target, output, root):
+            self.target = target
+            self.root = root
+            self.output = output
+
+        def build(self, tools, ninja):
+            site = self.output
+            site_files = list(get_files(self.root, '*'))
+            ninja.build(site, 'site',
+                    inputs = self.root,
+                    implicit = site_files)
+
+            ninja.build(self.target, 'phony',
+                    inputs = site)
+
     def program(self, target, output, root='src'):
         self._targets.append(self.ProgramTarget(target, output, root))
     def test_runner(self, target='test', output='test', root='test'):
@@ -229,3 +235,5 @@ class Vallus:
         self._targets.append(self.StaticLibraryTarget(target, output, root))
     def dynamic_library(self, target, output, root='src'):
         self._targets.append(self.DynamicLibraryTarget(target, output, root))
+    def documentation(self, target='docs', output=path.join('dist', 'doc'), root='doc'):
+        self._targets.append(self.DocumentationTarget(target, output, root))
