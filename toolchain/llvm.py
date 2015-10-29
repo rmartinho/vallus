@@ -22,7 +22,7 @@ class Toolchain:
         return 'ar'
 
     def max_warnings(self):
-        return ['-pedantic', '-Wall', '-Wextra', '-Werror', '-Weverything']
+        return ['-pedantic', '-Wall', '-Wextra', '-Werror']
 
     def include(self, d):
         return '-I' + d;
