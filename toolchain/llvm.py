@@ -11,6 +11,8 @@
 #
 # LLVM toolchain
 
+import itertools
+
 class Toolchain:
     def compiler(self):
         return 'clang++'

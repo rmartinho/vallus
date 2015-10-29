@@ -11,6 +11,8 @@
 #
 # Microsoft toolchain
 
+import itertools
+
 class Toolchain:
     def compiler(self):
         return 'cl'
