@@ -53,6 +53,7 @@ class Toolchain:
     def linker_command(self,
                        command = 'g++',
                        libraries = [],
+                       libpaths = [],
                        debug = False,
                        lto = True,
                        extraflags = '',
@@ -61,6 +62,7 @@ class Toolchain:
         return ' '.join(itertools.chain(
                     [command],
                     ['/NOLOGO'],
+                    (self.libpath(p) for p in libpaths)
                     [extraflags],
                     ['/OUT:' + output]
                     [input],
@@ -104,6 +106,8 @@ class Toolchain:
         return '/D' + (k + '=' + v if v else k)
     def library(self, l):
         return l;
+    def libpath(self, p):
+        return '/LIBPATH:' + p;
 
     def debug_flags(self):
         return ['/MDd', '/ZI', '/Od', '/RTC1']

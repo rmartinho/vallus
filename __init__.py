@@ -131,6 +131,7 @@ class Vallus:
                         debug = args.debug,
                         lto = not args.no_lto,
                         libraries = self._libraries,
+                        libpaths = ['bin'],
                         extraflags = '$extraflags',
                         input = '$in',
                         output = '$out'
