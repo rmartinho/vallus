@@ -111,6 +111,8 @@ class Toolchain:
         return '-D' + (k + '=' + v if v else k)
     def library(self, l):
         return '-l' + l;
+    def libpath(self, p):
+        return '-L' + p;
 
     def debug_flags(self):
         return ['-g', '-Og']
