@@ -19,10 +19,10 @@ import re
 import sys
 import argparse
 
-import ninja_syntax
-import toolchain.gnu
-import toolchain.llvm
-import toolchain.ms
+from . import ninja_syntax
+from .toolchain import gnu
+from .toolchain import llvm
+from .toolchain import ms
 
 # util functions
 def get_files(root, pattern):
@@ -131,6 +131,7 @@ class Vallus:
                         debug = args.debug,
                         lto = not args.no_lto,
                         libraries = self._libraries,
+                        libpaths = ['bin'],
                         extraflags = '$extraflags',
                         input = '$in',
                         output = '$out'

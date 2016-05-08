@@ -58,6 +58,7 @@ class Toolchain:
     def linker_command(self,
                        command = 'g++',
                        libraries = [],
+                       libpaths = [],
                        debug = False,
                        lto = True,
                        extraflags = '',
@@ -67,6 +68,7 @@ class Toolchain:
                     [command],
                     ['-stdlib=libc++', '-std=c++11', '-pthread'],
                     self.lto_flags() if lto and not debug else [],
+                    (self.libpath(p) for p in libpaths),
                     [extraflags],
                     ['-o', output],
                     [input],
@@ -109,6 +111,8 @@ class Toolchain:
         return '-D' + (k + '=' + v if v else k)
     def library(self, l):
         return '-l' + l;
+    def libpath(self, p):
+        return '-L' + p;
 
     def debug_flags(self):
         return ['-g', '-Og']
