@@ -43,7 +43,7 @@ class Toolchain:
         return ' '.join(itertools.chain(
                     [command],
                     ['-MMD','-MF ' + dep_output],
-                    ['-c', '-stdlib=libc++', '-std=c++11'],
+                    ['-c', '-stdlib=libc++', '-std=c++11', '-pthread'],
                     self.debug_flags() if debug else self.opt_flags(),
                     self.lto_flags() if lto and not debug else [],
                     warnings,
@@ -66,7 +66,7 @@ class Toolchain:
                        output = ''):
         return ' '.join(itertools.chain(
                     [command],
-                    ['-stdlib=libc++', '-std=c++11'],
+                    ['-stdlib=libc++', '-std=c++11', '-pthread'],
                     self.lto_flags() if lto and not debug else [],
                     (self.libpath(p) for p in libpaths),
                     [extraflags],
