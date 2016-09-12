@@ -63,6 +63,7 @@ class Toolchain:
                     [command],
                     ['/NOLOGO'],
                     (self.libpath(p) for p in libpaths),
+                    self.linker_lto_flags() if lto and not debug else [],
                     [extraflags],
                     ['/OUT:' + output],
                     [input],
@@ -114,8 +115,8 @@ class Toolchain:
         return ['/MD', '/O2', '/Oy-', '/Oi']
     def compiler_lto_flags(self):
         return ['/GL']
-    def archiver_lto_flags(self):
-        return []
+    def linker_lto_flags(self):
+        return ['/LTCG']
 
     def ninja_deps_style(self):
         return 'msvc'
