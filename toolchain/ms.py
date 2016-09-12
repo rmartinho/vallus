@@ -46,7 +46,7 @@ class Toolchain:
                     (self.dep_include(i) for i in includes),
                     (self.define(*kv) for kv in defines),
                     [extraflags],
-                    ['/Fo' + output]
+                    ['/Fo' + output],
                     [input]
                 ))
 
@@ -62,9 +62,10 @@ class Toolchain:
         return ' '.join(itertools.chain(
                     [command],
                     ['/NOLOGO'],
-                    (self.libpath(p) for p in libpaths)
+                    (self.libpath(p) for p in libpaths),
+                    self.linker_lto_flags() if lto and not debug else [],
                     [extraflags],
-                    ['/OUT:' + output]
+                    ['/OUT:' + output],
                     [input],
                     (self.library(l) for l in libraries)
                 ))
@@ -78,8 +79,7 @@ class Toolchain:
         return ' '.join(itertools.chain(
                     [command],
                     ['/NOLOGO'],
-                    self.archiver_lto_flags() if lto and not debug else [],
-                    ['/OUT:' + output]
+                    ['/OUT:' + output],
                     [extraflags],
                     [input]
                 ))
@@ -99,9 +99,9 @@ class Toolchain:
         return output + '.dll'
 
     def include(self, i):
-        return '/I' + d;
+        return '/I' + i;
     def dep_include(self, i):
-        return '/I' + d;
+        return '/I' + i;
     def define(self, k, v=None):
         return '/D' + (k + '=' + v if v else k)
     def library(self, l):
@@ -115,8 +115,8 @@ class Toolchain:
         return ['/MD', '/O2', '/Oy-', '/Oi']
     def compiler_lto_flags(self):
         return ['/GL']
-    def archiver_lto_flags(self):
-        return []
+    def linker_lto_flags(self):
+        return ['/LTCG']
 
     def ninja_deps_style(self):
         return 'msvc'
