@@ -108,7 +108,7 @@ class Vallus:
                 description = 'BOOTSTRAP')
         all_includes = self._includes + [path.join('deps', i, 'include') for i in self._depends]
         if(args.boost_dir):
-            all_includes.append(path.join(args.boost_dir, 'include'))
+            all_includes.append(args.boost_dir)
         ninja.rule('cxx',
                 command = tools.compiler_command(
                         command = compiler,
